@@ -68,4 +68,8 @@ public class BusWrapper {
     public void setBuses(LinkedList<String> buses) {
         this.buses = buses;
     }
+
+    private void doNothing(){
+        System.out.println("To tylko do testowania svn");
+    }
 }
