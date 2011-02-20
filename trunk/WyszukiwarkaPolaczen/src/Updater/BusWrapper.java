@@ -68,5 +68,5 @@ public class BusWrapper {
     public void setBuses(LinkedList<String> buses) {
         this.buses = buses;
     }
-    //ciekawe czy zwróci awagę na komentarz
+    
 }

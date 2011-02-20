@@ -290,7 +290,7 @@ public class Updater {
 
         return rozklad;
     }
-//a tu zauważy komentarz?
+
     private String getOdjazdy(Scanner input) {
         String odjazdy = "";
         String s = input.nextLine();
