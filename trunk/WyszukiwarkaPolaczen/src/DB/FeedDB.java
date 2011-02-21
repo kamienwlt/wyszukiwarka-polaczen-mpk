@@ -6,7 +6,11 @@
 package DB;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -53,10 +57,12 @@ public class FeedDB {
                 stmt.execute("DELETE FROM kierunek WHERE 1;");
                 stmt.execute("DELETE FROM ulica WHERE 1;");
                 stmt.execute("DELETE FROM przystanek WHERE 1;");
+                stmt.execute("DELETE FROM trasa WHERE 1;");
                 insertLinie();
                 insertKierunki();
                 insertUlice();
                 insertPrzystanki();
+                insertTrasy();
             } catch (MySQLSyntaxErrorException e) {
                 Logger.getLogger(CreateDB.class.getName()).log(Level.SEVERE, null, e);
                 System.exit(0);
@@ -76,6 +82,9 @@ public class FeedDB {
         File[] list = f.listFiles();
         for (int i = 0; i < list.length; i++) {
             File file = list[i];
+            if(file.getName().equalsIgnoreCase(".svn")){
+                break;
+            }
             stmt.execute("INSERT INTO linia VALUES(0, '"+file.getName()+"');");
         }
     }
@@ -89,6 +98,9 @@ public class FeedDB {
         File[] list = f.listFiles();
         for (int i = 0; i < list.length; i++) {
             File file = list[i];
+            if(file.getName().equalsIgnoreCase(".svn")){
+                break;
+            }
             File[] kierunki = file.listFiles();
             for (int j = 0; j < kierunki.length; j++) {
                 File file1 = kierunki[j];
@@ -98,9 +110,7 @@ public class FeedDB {
                     stmt.execute("INSERT INTO kierunek VALUES(0, '"+file1.getName()+"');");
                 }
             }
-
         }
-
     }
 
     private void insertUlice() throws SQLException {
@@ -112,9 +122,15 @@ public class FeedDB {
         File[] list = f.listFiles();
         for (int i = 0; i < list.length; i++) {
             File file = list[i];
+            if(file.getName().equalsIgnoreCase(".svn")){
+                break;
+            }
             File[] kierunki = file.listFiles();
             for (int j = 0; j < kierunki.length; j++) {
                 File file1 = kierunki[j];
+                if(file1.getName().equalsIgnoreCase(".svn")){
+                    break;
+                }
                 File[] przystanki = file1.listFiles();
                 for (int k = 0; k < przystanki.length; k++) {
                     File file2 = przystanki[k];
@@ -143,8 +159,14 @@ public class FeedDB {
         for (int i = 0; i < list.length; i++) {
             File file = list[i];
             File[] kierunki = file.listFiles();
+            if(file.getName().equalsIgnoreCase(".svn")){
+                break;
+            }
             for (int j = 0; j < kierunki.length; j++) {
                 File file1 = kierunki[j];
+                if(file1.getName().equalsIgnoreCase(".svn")){
+                    break;
+                }
                 File[] przystanki = file1.listFiles();
                 for (int k = 0; k < przystanki.length; k++) {
                     File file2 = przystanki[k];
@@ -167,6 +189,48 @@ public class FeedDB {
                 }
             }
         }
+    }
+
+    private void insertTrasy()throws SQLException  {
+        File f = new File("data"+File.separator+"Trasy");
+        if(!f.exists()){
+            System.out.println("Problem ze znalezieniem katalogu z trasami!");
+            return;
+        }
+        File[] list = f.listFiles();
+        for (int i = 0; i < list.length; i++) {
+            File file = list[i];
+            File[] kierunki = file.listFiles();
+            if(file.getName().equalsIgnoreCase(".svn")){
+                break;
+            }
+            for (int j = 0; j < kierunki.length; j++) {
+                File file1 = kierunki[j];
+                if(file1.getName().equalsIgnoreCase(".svn")){
+                    break;
+                }
+                ResultSet rs = stmt.executeQuery("SELECT id_kierunku FROM kierunek WHERE kierunek.nazwa='"+file1.getName()+"';");
+                rs.next();
+                int idkier = rs.getInt(1);
+                rs = stmt.executeQuery("SELECT id_linii FROM linia WHERE linia.nazwa='"+file.getName()+"';");
+                rs.next();
+                int idlinii = rs.getInt(1);
+                String przystanki="";
+                try {
+                    BufferedReader in = new BufferedReader(new FileReader(file1));
+                    String line="";
+                    while((line=in.readLine())!=null){
+                        line = line.substring(0, line.indexOf("-")).trim();
+                        przystanki+=line+" ";
+                    }
+                    in.close();
+                    stmt.execute("INSERT INTO trasa VALUES("+idkier+", "+idlinii+", '"+przystanki+"');");
+                } catch (IOException ex) {
+                    System.out.println("Problemy z odczytem danych z pliku: "+file1.getName());
+                }
+            }
+        }
+
     }
 
 }
