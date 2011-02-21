@@ -5,9 +5,6 @@
 
 package Updater;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
 /**
  *
  * @author x
@@ -21,8 +18,6 @@ public class UpdaterMain {
         // TODO code application logic here
         Updater u = new Updater();
         u.update();
-        HashMap<String, LinkedList<String>> g = u.getGraf();
-        System.out.println(g.toString());
     }
 
 }

@@ -27,17 +27,20 @@ public class Updater {
     private LinkedList<String> buses;
     private StopsWrapper stopsWrapper;
     private HashMap<String, String> przystWgUlic;
+    private MapMaker mapMaker;
     private HashMap<String, LinkedList<String>> graf;
 
     public Updater() {
         busWrapper = new BusWrapper();
         stopsWrapper = new StopsWrapper();
         graf = new HashMap<String, LinkedList<String>>();
+        mapMaker = new MapMaker(graf);
     }
 
     public void update() {
         startWrapping();
         startUpdate();
+        createMapFile();
     }
 
     private void startWrapping() {
@@ -98,12 +101,12 @@ public class Updater {
                     s = s.trim().replaceFirst("Kierunek: <b style=\"font-size:14px\">", "");
                     s = s.replaceFirst("</b>", "");
                     kierunek = s.trim();
-                    if (kierunekCount.containsKey(kierunek)){
+                    if (kierunekCount.containsKey(kierunek)) {
                         int newCount = kierunekCount.get(kierunek) + 1;
                         kierunekCount.remove(kierunek);
                         kierunekCount.put(kierunek, newCount);
                         kierunek = kierunek + newCount;
-                    } else{
+                    } else {
                         kierunekCount.put(kierunek, 1);
                     }
 
@@ -123,14 +126,16 @@ public class Updater {
                     s = s.split("\">")[1];
                     trasa += s + "\n";
                     String nrPrzystanku = s.split(" ")[0];
-                    if (popPrzystanek.equals(""))
+                    if (popPrzystanek.equals("")) {
                         popPrzystanek = s;
-                    else {
-                        if (getGraf().containsKey(popPrzystanek)){
+                    } else {
+                        if (getGraf().containsKey(popPrzystanek)) {
                             LinkedList<String> rob = getGraf().get(popPrzystanek);
-                            rob.addLast(s);
-                            getGraf().remove(popPrzystanek);
-                            getGraf().put(popPrzystanek, rob);
+                            if (!rob.contains(s)) {
+                                rob.addLast(s);
+                                getGraf().remove(popPrzystanek);
+                                getGraf().put(popPrzystanek, rob);
+                            }
                         } else {
                             LinkedList<String> rob = new LinkedList<String>();
                             rob.addLast(s);
@@ -356,5 +361,9 @@ public class Updater {
      */
     public void setGraf(HashMap<String, LinkedList<String>> graf) {
         this.graf = graf;
+    }
+
+    private void createMapFile() {
+        mapMaker.createMapFile();
     }
 }
