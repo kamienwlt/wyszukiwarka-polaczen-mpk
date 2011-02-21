@@ -53,6 +53,7 @@ public class CreateDB {
                 stmt.execute("CREATE TABLE ulica (id_ulicy Integer NOT NULL AUTO_INCREMENT, nazwa varchar(30), PRIMARY KEY (id_ulicy));");
                 stmt.execute("CREATE TABLE kierunek (id_kierunku Integer NOT NULL AUTO_INCREMENT, nazwa varchar(30), PRIMARY KEY (id_kierunku));");
                 stmt.execute("CREATE TABLE trasa (id_kierunku Integer NOT NULL,  id_linii Integer NOT NULL, lista_id_przystankow blob);");
+                stmt.execute("CREATE TABLE przystanek (id_przystanku Integer NOT NULL,  id_ulicy Integer NOT NULL, nazwa varchar(50));");
                 stmt.execute("CREATE TABLE godzinyPowszedni (id_przystanku Integer NOT NULL,  id_linii Integer NOT NULL, godziny blob);");
                 stmt.execute("CREATE TABLE godzinySobota (id_przystanku Integer NOT NULL,  id_linii Integer NOT NULL, godziny blob);");
                 stmt.execute("CREATE TABLE godzinyNiedziela (id_przystanku Integer NOT NULL,  id_linii Integer NOT NULL, godziny blob);");
