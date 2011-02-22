@@ -5,10 +5,13 @@
 package Modele.Mapa;
 
 import Modele.Mapa.Wagi.*;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
@@ -96,7 +99,7 @@ public class MapaPrzystankow {
                     int rob = du + waga;
                     if (dv > rob) {
                         d.remove(v);
-                        d.put(v, waga);
+                        d.put(v, rob);
                         p.remove(v);
                         p.put(v, u);
                     }
