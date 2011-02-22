@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package Modele;
+package Modele.Podstawowe;
 
+import Modele.Rozklad.RozkladAbstract;
 import java.util.LinkedList;
 
 /**
