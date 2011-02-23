@@ -4,6 +4,9 @@
  */
 package Modele.Mapa;
 
+import java.io.InputStreamReader;
+import java.net.URLConnection;
+import java.net.URL;
 import Modele.Mapa.Wagi.*;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -17,6 +20,7 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  *
@@ -35,6 +39,7 @@ public class MapaPrzystankow {
         File plikMapy = new File(sciezka);
         listaKrawedzi = createListaKrawedzi(plikMapy);
         listaWierzch = createListaWierzcholkow(listaKrawedzi);
+        //createStopBusFiles(listaWierzch);
     }
 
     private LinkedList<KrawedzPrzystankow> createListaKrawedzi(File plikMapy) {
@@ -69,6 +74,7 @@ public class MapaPrzystankow {
 
     public void showPathDijkstry(String poczatek, String koniec){
         calculateDandP(poczatek);
+        //writeDandP();
         Stack<String> s = getPath(koniec);
         showPath(s);
     }
@@ -83,7 +89,7 @@ public class MapaPrzystankow {
         for (String v : listaWierzch) {
             Q.add(v);
             p.put(v, null);
-            d.put(v, Integer.MAX_VALUE);
+            d.put(v, 9999999);
         }
         d.remove(v0);
         d.put(v0, 0);
@@ -123,13 +129,11 @@ public class MapaPrzystankow {
 
     private void showPath(Stack<String> s){
         while(!s.isEmpty()){
-            System.out.println(s.pop());
+            String stop = s.pop();
+            SameBusWagaCalculator rob = (SameBusWagaCalculator)wagaCalc;
+            stop += " " + rob.getBuses(stop);
+            System.out.println(stop);
         }
-    }
-
-    public static void main(String[] args) {
-        MapaPrzystankow m = new MapaPrzystankow();
-        m.showPathDijkstry("4552", "1421");
     }
 
     private LinkedList<String> createListaWierzcholkow(LinkedList<KrawedzPrzystankow> listaKrawedzi) {
@@ -149,7 +153,7 @@ public class MapaPrzystankow {
 
     private String min(LinkedList<String> Q, HashMap<String, Integer> d) {
         String wynik = "";
-        int min = Integer.MAX_VALUE;
+        int min = 9999999;
         for (String v : Q) {
             int rob = d.get(v);
             if (rob <= min) {
@@ -171,4 +175,136 @@ public class MapaPrzystankow {
         }
         return found;
     }
+
+    private void showCost(String koniec) {
+        System.out.println("Koszt = " + d.get(koniec));
+    }
+
+    /**
+     * @param wagaCalc the wagaCalc to set
+     */
+    public void setWagaCalc(WagaCalculatorInterface wagaCalc) {
+        this.wagaCalc = wagaCalc;
+    }
+
+    public static void main(String[] args) {
+        String poczatek = "4572";
+        String koniec = "5432";
+        MapaPrzystankow m = new MapaPrzystankow();
+        SameBusWagaCalculator sbwc = new SameBusWagaCalculator();
+        sbwc.setPrimaryBuses(poczatek);
+        m.setWagaCalc(sbwc);
+        m.showPathDijkstry(poczatek, koniec);
+        m.showCost(koniec);
+    }
+
+//======================== metody pomocnicze ==========================================================
+
+    public void writeDandP(int i){
+        FileWriter fw = null;
+        try {
+            File f = new File("data" + File.separator + "dp" + i);
+            fw = new FileWriter(f);
+            BufferedWriter bf = new BufferedWriter(fw);
+            for (String s : d.keySet()){
+                String info = s + " " + d.get(s) + " " + p.get(s);
+                bf.write(info);
+                bf.newLine();
+            }
+            bf.flush();
+            bf.close();
+        } catch (IOException ex) {
+            Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void writeDandP(){
+        FileWriter fw = null;
+        try {
+            File f = new File("data" + File.separator + "dp");
+            fw = new FileWriter(f);
+            BufferedWriter bf = new BufferedWriter(fw);
+            for (String s : d.keySet()){
+                String info = s + " " + d.get(s) + " " + p.get(s);
+                bf.write(info);
+                bf.newLine();
+            }
+            bf.flush();
+            bf.close();
+        } catch (IOException ex) {
+            Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private void createStopBusFiles(LinkedList<String> listaWierzch) {
+        FileWriter fw = null;
+        try {
+            File f = new File("data" + File.separator + "StopsBuses");
+            fw = new FileWriter(f);
+            BufferedWriter bf = new BufferedWriter(fw);
+            for (String s : listaWierzch) {
+                LinkedList<String> buses = getBuses(s);
+                String info = s;
+                for (String sPrim : buses) {
+                    info += " " + sPrim;
+                }
+                bf.write(info);
+                bf.newLine();
+            }
+            bf.close();
+        } catch (IOException ex) {
+            Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+
+    private LinkedList<String> getBuses(String v) {
+        LinkedList<String> wynik = null;
+        try {
+            String tempAdres = "http://mpk.lublin.pl/?przy=" + v;
+            URL adr = new URL(tempAdres);
+            URLConnection yc = adr.openConnection();
+            Scanner input = new Scanner(new InputStreamReader(yc.getInputStream()));
+            wynik = readBusses(input);
+        } catch (IOException ex) {
+            Logger.getLogger(SameBusWagaCalculator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return wynik;
+    }
+
+    private LinkedList<String> readBusses(Scanner input) throws IOException {
+        LinkedList<String> wynik = new LinkedList<String>();
+        String s = input.nextLine();
+        while (input.hasNextLine()) {
+            if (s.trim().startsWith("<a class=\"rozklad-nr-linii\" href=\"../../?")) {
+                s = s.substring(s.indexOf("?") + 1);
+                s = s.substring(0, s.indexOf("\""));
+                s = s.replace("lin=", "");
+                wynik.add(s);
+            }
+            s = input.nextLine();
+        }
+        return wynik;
+    }
+
+
 }
