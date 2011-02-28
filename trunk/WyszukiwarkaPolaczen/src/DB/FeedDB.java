@@ -58,11 +58,17 @@ public class FeedDB {
                 stmt.execute("DELETE FROM ulica WHERE 1;");
                 stmt.execute("DELETE FROM przystanek WHERE 1;");
                 stmt.execute("DELETE FROM trasa WHERE 1;");
+                stmt.execute("DELETE FROM godzinyPowszedni WHERE 1;");
+                stmt.execute("DELETE FROM godzinySobota WHERE 1;");
+                stmt.execute("DELETE FROM godzinyNiedziela WHERE 1;");
+                stmt.execute("DELETE FROM godzinyWigilia WHERE 1;");
+                stmt.execute("DELETE FROM godzinyWielkanoc WHERE 1;");
                 insertLinie();
                 insertKierunki();
                 insertUlice();
                 insertPrzystanki();
                 insertTrasy();
+                insertOdjazdy();
             } catch (MySQLSyntaxErrorException e) {
                 Logger.getLogger(CreateDB.class.getName()).log(Level.SEVERE, null, e);
                 System.exit(0);
@@ -231,6 +237,75 @@ public class FeedDB {
             }
         }
 
+    }
+
+    private void insertOdjazdy()throws SQLException  {
+        File f = new File("data"+File.separator+"Rozkłady");
+        if(!f.exists()){
+            System.out.println("Problem ze znalezieniem katalogu z rozkładami!");
+            return;
+        }
+        File[] list = f.listFiles();
+        for (int i = 0; i < list.length; i++) {
+            File file = list[i];
+            File[] kierunki = file.listFiles();
+            if(file.getName().equalsIgnoreCase(".svn")){
+                break;
+            }
+            for (int j = 0; j < kierunki.length; j++) {
+                File file1 = kierunki[j];
+                if(file1.getName().equalsIgnoreCase(".svn")){
+                    break;
+                }
+                File[] przystanki = file1.listFiles();
+                for (int k = 0; k < przystanki.length; k++) {
+                    if(przystanki[k].getName().equalsIgnoreCase(".svn")){
+                        break;
+                    }
+                    String reszta = przystanki[k].getName();
+                    reszta = reszta.substring(reszta.indexOf("]")+1);
+                    int id_przystanku = Integer.parseInt(reszta.substring(0,reszta.indexOf("-")).trim());
+                    ResultSet rs = stmt.executeQuery("SELECT id_linii FROM linia WHERE linia.nazwa='"+file.getName()+"';");
+                    rs.next();
+                    int idlinii = rs.getInt(1);
+                    String hours="";
+                    try {
+                        BufferedReader in = new BufferedReader(new FileReader(przystanki[k]));
+                        in.readLine();
+                        String line;
+                        String tablename="";
+                        while((line=in.readLine())!=null){
+                            if(line.startsWith("D")||line.startsWith("S")||line.startsWith("W")){
+                                if(!hours.isEmpty()&&!tablename.isEmpty()){
+                                    //System.out.println("INSERT INTO "+tablename+" VALUES("+id_przystanku+", "+idlinii+", '"+hours+"');");
+                                    stmt.execute("INSERT INTO "+tablename+" VALUES("+id_przystanku+", "+idlinii+", '"+hours+"');");
+                                    hours="";
+                                }
+                                if(line.startsWith("DZIEŃ POWSZEDNI")){
+                                    tablename = "godzinyPowszedni";
+                                }else if(line.startsWith("SOBOTA")){
+                                    tablename = "godzinySobota";
+                                }else if(line.startsWith("DZIEŃ ŚWIĄTECZNY")){
+                                    tablename = "godzinyNiedziela";
+                                }else if(line.startsWith("WIELKANOC,BOŻE NARODZENIE,NOWY ROK")){
+                                    tablename = "godzinyWielkanoc";
+                                }else if(line.startsWith("WIGILIA I SYLWESTER")){
+                                    tablename = "godzinyWigilia";
+                                }
+                            }else{
+                                if(!line.trim().isEmpty()){
+                                    hours+=line+"\n";
+                                }
+                            }
+                        }
+                        in.close();
+                    } catch (IOException ex) {
+                        System.err.println("Problemy z otwarciem pliku: "+przystanki[k].getAbsolutePath());
+                    }
+
+                }
+            }
+        }
     }
 
 }
