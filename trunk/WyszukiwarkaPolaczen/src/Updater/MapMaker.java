@@ -21,15 +21,15 @@ public class MapMaker {
 
     private HashMap<String, LinkedList<String>> g;
 
-    public MapMaker(HashMap<String, LinkedList<String>> g) {
-        this.g = g;
+    public MapMaker() {
+        //this.g = g;
     }
 
-    void createMapFile() {
+    void createMapFile(HashMap<String, LinkedList<String>> g, String nazwa) {
         System.out.println("Rozpoczeto tworzenie pliku mapy przystankow");
         FileWriter fw = null;
         try {
-            File mapFile = new File("data" + File.separator + "MapaPrzystankow");
+            File mapFile = new File("data" + File.separator + nazwa);
             fw = new FileWriter(mapFile);
             BufferedWriter bf = new BufferedWriter(fw);
             for (String k : g.keySet()) {
