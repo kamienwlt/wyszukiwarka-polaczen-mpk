@@ -36,10 +36,13 @@ public class MapaPrzystankow {
     private WagaCalculatorInterface wagaCalc = new SimpleWagaCalculator();
 
     public MapaPrzystankow() {
+        //createStopBusFiles(listaWierzch);
+    }
+
+    public void setFile(String sciezka){
         File plikMapy = new File(sciezka);
         listaKrawedzi = createListaKrawedzi(plikMapy);
         listaWierzch = createListaWierzcholkow(listaKrawedzi);
-        //createStopBusFiles(listaWierzch);
     }
 
     private LinkedList<KrawedzPrzystankow> createListaKrawedzi(File plikMapy) {
@@ -130,8 +133,6 @@ public class MapaPrzystankow {
     private void showPath(Stack<String> s){
         while(!s.isEmpty()){
             String stop = s.pop();
-            SameBusWagaCalculator rob = (SameBusWagaCalculator)wagaCalc;
-            stop += " " + rob.getBuses(stop);
             System.out.println(stop);
         }
     }
@@ -189,11 +190,10 @@ public class MapaPrzystankow {
 
     public static void main(String[] args) {
         String poczatek = "4572";
-        String koniec = "5432";
+        String koniec = "1421";
+        String sciezka = "data" + File.separator + "MapaPolaczen";
         MapaPrzystankow m = new MapaPrzystankow();
-        SameBusWagaCalculator sbwc = new SameBusWagaCalculator();
-        sbwc.setPrimaryBuses(poczatek);
-        m.setWagaCalc(sbwc);
+        m.setFile(sciezka);
         m.showPathDijkstry(poczatek, koniec);
         m.showCost(koniec);
     }

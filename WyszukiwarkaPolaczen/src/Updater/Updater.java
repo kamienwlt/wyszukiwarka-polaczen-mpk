@@ -28,19 +28,22 @@ public class Updater {
     private StopsWrapper stopsWrapper;
     private HashMap<String, String> przystWgUlic;
     private MapMaker mapMaker;
-    private HashMap<String, LinkedList<String>> graf;
+    private HashMap<String, LinkedList<String>> grafMapyPrzystankow;
+    private HashMap<String, LinkedList<String>> grafMapyPolaczen;
 
     public Updater() {
         busWrapper = new BusWrapper();
         stopsWrapper = new StopsWrapper();
-        graf = new HashMap<String, LinkedList<String>>();
-        mapMaker = new MapMaker(graf);
+        grafMapyPrzystankow = new HashMap<String, LinkedList<String>>();
+        grafMapyPolaczen = new HashMap<String, LinkedList<String>>();
+        mapMaker = new MapMaker();
     }
 
     public void update() {
         startWrapping();
         startUpdate();
-        createMapFile();
+        createMapFile(grafMapyPrzystankow, "MapaPrzystankow");
+        createMapFile(grafMapyPolaczen, "MapaPolaczen");
     }
 
     private void startWrapping() {
@@ -55,15 +58,17 @@ public class Updater {
 
     private void startUpdate() {
         System.out.println("Rozpoczeto glowna aktualizacje");
+        int i = 1;
         for (String linia : buses) {
             try {
                 URL adresTrasy = new URL("http://mpk.lublin.pl/index.php?s=rozklady&lin=" + linia);
                 URLConnection atConnection = adresTrasy.openConnection();
                 Scanner atConnectionInput = new Scanner(new InputStreamReader(atConnection.getInputStream()));
                 String s = atConnectionInput.nextLine();
-                System.out.println("Aktualizacja linii " + linia);
+                System.out.println("Aktualizacja linii " + linia + " [" + i + "/" + buses.size() + "]");
                 readTrasa(atConnectionInput, linia);
                 atConnectionInput.close();
+                i++;
             } catch (IOException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -78,7 +83,6 @@ public class Updater {
             String kierunek = "";
             File plikTrasyKierunku = null;
             String trasa = "";
-            String popPrzystanek = "";
             HashMap<String, Integer> kierunekCount = new HashMap<String, Integer>();
             String s = "";
 
@@ -91,8 +95,9 @@ public class Updater {
                         pkBufWriter.write(trasa);
                         pkBufWriter.flush();
                         pkBufWriter.close();
+                        updateGrafMapyPrzystankow(trasa);
+                        updateGrafMapyPolaczen(trasa);
                         trasa = "";
-                        popPrzystanek = "";
                     }
                     if (pkWriter != null) {
                         pkWriter.close();
@@ -126,24 +131,6 @@ public class Updater {
                     s = s.split("\">")[1];
                     trasa += s + "\n";
                     String nrPrzystanku = s.split(" ")[0];
-                    if (popPrzystanek.equals("")) {
-                        popPrzystanek = s;
-                    } else {
-                        if (getGraf().containsKey(popPrzystanek)) {
-                            LinkedList<String> rob = getGraf().get(popPrzystanek);
-                            if (!rob.contains(s)) {
-                                rob.addLast(s);
-                                getGraf().remove(popPrzystanek);
-                                getGraf().put(popPrzystanek, rob);
-                            }
-                        } else {
-                            LinkedList<String> rob = new LinkedList<String>();
-                            rob.addLast(s);
-                            getGraf().put(popPrzystanek, rob);
-                        }
-                        popPrzystanek = s;
-                    }
-
                     String przystanek = s;
                     String ulica = przystWgUlic.get(przystanek);
                     boolean utworzonoPlikRozkladuPrzystanku = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + "Kierunek - " + kierunek + File.separator + "[" + ulica + "] " + przystanek).createNewFile();
@@ -352,18 +339,74 @@ public class Updater {
     /**
      * @return the graf
      */
-    public HashMap<String, LinkedList<String>> getGraf() {
-        return graf;
+    public HashMap<String, LinkedList<String>> getGrafMapyPrzystankow() {
+        return grafMapyPrzystankow;
     }
 
     /**
      * @param graf the graf to set
      */
-    public void setGraf(HashMap<String, LinkedList<String>> graf) {
-        this.graf = graf;
+    public void setGrafMapyPrzystankow(HashMap<String, LinkedList<String>> graf) {
+        this.grafMapyPrzystankow = graf;
     }
 
-    private void createMapFile() {
-        mapMaker.createMapFile();
+    private void createMapFile(HashMap<String, LinkedList<String>> graf, String nazwa) {
+        mapMaker.createMapFile(graf, nazwa);
+    }
+
+    private void updateGrafMapyPrzystankow(String trasa) {
+        String popPrzystanek = "";
+        String[] trasaTab = trasa.split("\n");
+        for (String s : trasaTab) {
+            if (popPrzystanek.equals("")) {
+                popPrzystanek = s;
+            } else {
+                if (grafMapyPrzystankow.containsKey(popPrzystanek)) {
+                    LinkedList<String> rob = grafMapyPrzystankow.get(popPrzystanek);
+                    if (!rob.contains(s)) {
+                        rob.addLast(s);
+                        grafMapyPrzystankow.remove(popPrzystanek);
+                        grafMapyPrzystankow.put(popPrzystanek, rob);
+                    }
+                } else {
+                    LinkedList<String> rob = new LinkedList<String>();
+                    rob.addLast(s);
+                    grafMapyPrzystankow.put(popPrzystanek, rob);
+                }
+                popPrzystanek = s;
+            }
+        }
+    }
+
+    private void updateGrafMapyPolaczen(String trasa) {
+        String[] trasaTab = trasa.split("\n");
+        HashMap<String, LinkedList<String>> robGraf = new HashMap<String, LinkedList<String>>();
+        for (int i = 0; i < trasaTab.length; i++) {
+            String s = trasaTab[i];
+            LinkedList<String> robList = new LinkedList<String>();
+            if (i != trasaTab.length - 1) {
+                for (int j = i + 1; j < trasaTab.length; j++) {
+                    robList.addLast(trasaTab[j]);
+                }
+            }
+            robList.addLast("");
+            robGraf.put(s, robList);
+        }
+
+        for (String s : robGraf.keySet()) {
+            LinkedList<String> robList = robGraf.get(s);
+            if (grafMapyPolaczen.containsKey(s)) {
+                LinkedList<String> rob = grafMapyPolaczen.get(s);
+                for (String w : robList) {
+                    if (!rob.contains(w)) {
+                        rob.addLast(w);
+                    }
+                }
+                grafMapyPolaczen.remove(s);
+                grafMapyPolaczen.put(s, rob);
+            } else {
+                grafMapyPolaczen.put(s, robList);
+            }
+        }
     }
 }
