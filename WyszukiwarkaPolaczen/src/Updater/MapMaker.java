@@ -26,7 +26,7 @@ public class MapMaker {
     }
 
     void createMapFile(HashMap<String, LinkedList<String>> g, String nazwa) {
-        System.out.println("Rozpoczeto tworzenie pliku mapy przystankow");
+        System.out.println("Rozpoczeto tworzenie pliku " + nazwa);
         FileWriter fw = null;
         try {
             File mapFile = new File("data" + File.separator + nazwa);

@@ -6,6 +6,7 @@ package Updater;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,8 +43,6 @@ public class Updater {
     public void update() {
         startWrapping();
         startUpdate();
-        createMapFile(grafMapyPrzystankow, "MapaPrzystankow");
-        createMapFile(grafMapyPolaczen, "MapaPolaczen");
     }
 
     private void startWrapping() {
@@ -73,6 +72,9 @@ public class Updater {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        createGrafy(buses);
+        createMapFile(grafMapyPrzystankow, "MapaPrzystankow");
+        createMapFile(grafMapyPolaczen, "MapaPolaczen");
         System.out.println("Zakonczono glowna aktualizacje");
     }
 
@@ -95,8 +97,8 @@ public class Updater {
                         pkBufWriter.write(trasa);
                         pkBufWriter.flush();
                         pkBufWriter.close();
-                        updateGrafMapyPrzystankow(trasa);
-                        updateGrafMapyPolaczen(trasa);
+                        //updateGrafMapyPrzystankow(trasa);
+                        //updateGrafMapyPolaczen(trasa);
                         trasa = "";
                     }
                     if (pkWriter != null) {
@@ -406,6 +408,26 @@ public class Updater {
                 grafMapyPolaczen.put(s, rob);
             } else {
                 grafMapyPolaczen.put(s, robList);
+            }
+        }
+    }
+
+    private void createGrafy(LinkedList<String> buses) {
+        for (String linia : buses){
+            File f = new File("data" + File.separator + "Trasy" + File.separator + linia);
+            String[] kierunki = f.list();
+            for (String kierunek : kierunki){
+                try {
+                    File plikKierunku = new File("data" + File.separator + "Trasy" + File.separator + linia + File.separator + kierunek);
+                    Scanner input = new Scanner(plikKierunku);
+                    String trasa = "";
+                    while (input.hasNextLine())
+                        trasa += input.nextLine() + "\n";
+                    updateGrafMapyPolaczen(trasa);
+                    updateGrafMapyPrzystankow(trasa);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
