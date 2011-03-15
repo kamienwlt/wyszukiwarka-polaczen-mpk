@@ -122,6 +122,16 @@ public abstract class MapaAbstract implements MapaInterface {
         }
     }
 
+    protected String getPath(Stack<String> s){
+        String wynik = "";
+        while(!s.isEmpty()){
+            String stop = s.pop();
+            wynik += stop + " ";
+        }
+
+        return wynik;
+    }
+
     protected LinkedList<String> createListaWierzcholkow(LinkedList<KrawedzPrzystankow> listaKrawedzi) {
         LinkedList<String> wynik = new LinkedList<String>();
         for (KrawedzPrzystankow k : listaKrawedzi) {

@@ -35,4 +35,10 @@ public class MapaPrzystankow extends MapaAbstract{
         m.showPath(poczatek, koniec);
         m.showCost(koniec);
     }
+
+    public void updateMapa() {
+        File plikMapy = new File(sciezka);
+        listaKrawedzi = createListaKrawedzi(plikMapy);
+        listaWierzch = createListaWierzcholkow(listaKrawedzi);
+    }
 }

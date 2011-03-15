@@ -6,6 +6,8 @@
 package Modele.WyszukiwarkaTrasy;
 
 import Modele.Mapa.MapaInterface;
+import Modele.Mapa.MapaPolaczen;
+import Modele.Mapa.MapaPrzystankow;
 
 /**
  *
@@ -13,6 +15,8 @@ import Modele.Mapa.MapaInterface;
  */
 public class WyszukiwarkaTrasy implements WyszukiwarkaTrasyInterface{
 
+    public final MapaInterface MAPA_PRZYSTANKOW = new MapaPrzystankow();
+    public final MapaInterface MAPA_POLACZEN = new MapaPolaczen();
     private MapaInterface mapa;
     private String poczatek;
     private String koniec;

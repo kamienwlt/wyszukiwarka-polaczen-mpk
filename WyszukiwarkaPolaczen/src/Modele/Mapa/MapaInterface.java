@@ -11,4 +11,5 @@ package Modele.Mapa;
  */
 public interface MapaInterface {
     public void showPath(String poczatek, String koniec);
+    public void updateMapa();
 }
