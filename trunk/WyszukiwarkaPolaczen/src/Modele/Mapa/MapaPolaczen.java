@@ -59,11 +59,13 @@ public class MapaPolaczen extends MapaAbstract {
                 f = new File("data" + File.separator + "SciezkiWzglPrzesiadek" + File.separator + przystanekPoczatkowy);
                 fw = new FileWriter(f);
                 bw = new BufferedWriter(fw);
-                for(String przystanekKoncowy : listaWierzch){
+                for (String przystanekKoncowy : listaWierzch) {
                     s = getPath(przystanekKoncowy);
                     String path = getPath(s);
-                    bw.write(przystanekKoncowy + "#" + path);
-                    bw.newLine();
+                    if (path.startsWith(przystanekPoczatkowy)) {
+                        bw.write(przystanekKoncowy + "#" + path);
+                        bw.newLine();
+                    }
                 }
                 bw.flush();
                 bw.close();

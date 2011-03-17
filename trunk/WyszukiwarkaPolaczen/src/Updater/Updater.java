@@ -391,7 +391,6 @@ public class Updater {
                     robList.addLast(trasaTab[j]);
                 }
             }
-            robList.addLast("");
             robGraf.put(s, robList);
         }
 
