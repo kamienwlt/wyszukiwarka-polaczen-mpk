@@ -44,14 +44,14 @@ public class MapaPolaczen extends MapaAbstract {
         //m.showCost(koniec);
     }
 
-    public void updateMapa() {
+    public void updateMapa(LinkedList<String> lista){
         Stack<String> s = null;
         File f = null;
         FileWriter fw = null;
         BufferedWriter bw = null;
         int i = 1;
-        for (String przystanekPoczatkowy : listaWierzch) {
-            System.out.println("Tworze plik polaczen dla przystanku " + przystanekPoczatkowy + " [" + i + "/" + listaWierzch.size() + "]");
+        for (String przystanekPoczatkowy : lista) {
+            System.out.println("Tworze plik polaczen dla przystanku " + przystanekPoczatkowy + " [" + i + "/" + lista.size() + "]");
             try {
                 calculateDandP(przystanekPoczatkowy);
                 boolean catalogCreated = new File("data" + File.separator + "SciezkiWzglPrzesiadek").mkdir();
@@ -59,7 +59,7 @@ public class MapaPolaczen extends MapaAbstract {
                 f = new File("data" + File.separator + "SciezkiWzglPrzesiadek" + File.separator + przystanekPoczatkowy);
                 fw = new FileWriter(f);
                 bw = new BufferedWriter(fw);
-                for (String przystanekKoncowy : listaWierzch) {
+                for (String przystanekKoncowy : lista) {
                     s = getPath(przystanekKoncowy);
                     String path = getPath(s);
                     if (path.startsWith(przystanekPoczatkowy)) {
@@ -75,5 +75,9 @@ public class MapaPolaczen extends MapaAbstract {
             }
             i++;
         }
+    }
+
+    public void updateMapa() {
+        updateMapa(listaWierzch);
     }
 }
