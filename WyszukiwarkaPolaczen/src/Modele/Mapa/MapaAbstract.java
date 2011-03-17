@@ -36,6 +36,13 @@ public abstract class MapaAbstract implements MapaInterface {
 
     abstract public void showPath(String poczatek, String koniec);
 
+    /**
+     * @return the listaWierzch
+     */
+    public LinkedList<String> getListaWierzch() {
+        return listaWierzch;
+    }
+
     protected LinkedList<KrawedzPrzystankow> createListaKrawedzi(File plikMapy) {
         LinkedList<KrawedzPrzystankow> wynik = null;
         try {
