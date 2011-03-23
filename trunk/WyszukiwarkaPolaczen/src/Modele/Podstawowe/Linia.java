@@ -5,6 +5,8 @@
 
 package Modele.Podstawowe;
 
+import com.sun.org.apache.xpath.internal.axes.IteratorPool;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -28,6 +30,21 @@ public class Linia {
 
     public void removeTrasa(Trasa trasa){
         trasy.remove(trasa);
+    }
+
+    public Trasa getTrasa(String kierunek){
+        Trasa t = null;
+        Iterator<Trasa> it = trasy.iterator();
+        boolean found = false;
+        Trasa rob = null;
+        while(it.hasNext() && !found){
+            rob = it.next();
+            if (rob.getKierunek().equalsIgnoreCase(kierunek)){
+                found = true;
+            }
+        }
+        if (found) t = rob;
+        return t;
     }
 
     /**

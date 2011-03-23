@@ -45,4 +45,8 @@ public class Trasa {
     public void setDroga(Droga droga) {
         this.droga = droga;
     }
+
+    public Przystanek getPrzystanek(String przystanekString) {
+        return droga.getPrzystanek(przystanekString);
+    }
 }

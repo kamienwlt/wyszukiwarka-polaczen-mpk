@@ -27,7 +27,6 @@ public class Updater {
     private BusWrapper busWrapper;
     private LinkedList<String> buses;
     private StopsWrapper stopsWrapper;
-    private HashMap<String, String> przystWgUlic;
     private MapMaker mapMaker;
     private HashMap<String, LinkedList<String>> grafMapyPrzystankow;
     private HashMap<String, LinkedList<String>> grafMapyPolaczen;
@@ -51,7 +50,6 @@ public class Updater {
         buses = busWrapper.getBuses();
 
         stopsWrapper.readStops();
-        przystWgUlic = stopsWrapper.getPrzystWgUlic();
         System.out.println("Zakonczono wstepne przygotowania");
     }
 
@@ -75,6 +73,7 @@ public class Updater {
         createGrafy(buses);
         createMapFile(grafMapyPrzystankow, "MapaPrzystankow");
         createMapFile(grafMapyPolaczen, "MapaPolaczen");
+        stopsWrapper.writePrzystWgUlicFile();
         System.out.println("Zakonczono glowna aktualizacje");
     }
 
@@ -118,7 +117,7 @@ public class Updater {
                     }
 
 
-                    boolean utworzonoFolderRozkladow = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + "Kierunek - " + kierunek).mkdirs();
+                    boolean utworzonoFolderRozkladow = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + kierunek).mkdirs();
                     boolean utworzonoFolderTras = new File("data" + File.separator + "Trasy" + File.separator + linia).mkdirs();
                     boolean utworzonoPlikTrasyLiniiKierunek = new File("data" + File.separator + "Trasy" + File.separator + linia + File.separator + kierunek).createNewFile();
 
@@ -134,9 +133,8 @@ public class Updater {
                     trasa += s + "\n";
                     String nrPrzystanku = s.split(" ")[0];
                     String przystanek = s;
-                    String ulica = przystWgUlic.get(przystanek);
-                    boolean utworzonoPlikRozkladuPrzystanku = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + "Kierunek - " + kierunek + File.separator + "[" + ulica + "] " + przystanek).createNewFile();
-                    File plikPrzystanku = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + "Kierunek - " + kierunek + File.separator + "[" + ulica + "] " + przystanek);
+                    boolean utworzonoPlikRozkladuPrzystanku = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + kierunek + File.separator + przystanek).createNewFile();
+                    File plikPrzystanku = new File("data" + File.separator + "Rozkłady" + File.separator + linia + File.separator + kierunek + File.separator + przystanek);
                     readPrzystanek(plikPrzystanku, linia, nrPrzystanku);
                 }
             }
@@ -332,7 +330,7 @@ public class Updater {
         }
 
         while (!minuty.isEmpty()) {
-            odjazdy += godziny.pop() + "\t" + minuty.pop() + "\n";
+            odjazdy += godziny.pop() + ") " + minuty.pop() + "\n";
         }
 
         return odjazdy;

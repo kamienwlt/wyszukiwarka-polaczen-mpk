@@ -26,8 +26,8 @@ public class RozkladLinii extends RozkladAbstract{
     }
 
     @Override
-    public void pokazRozklad() {
-        System.out.println(rozklad);
+    public String pokazRozklad() {
+        return rozklad;
     }
 
     @Override

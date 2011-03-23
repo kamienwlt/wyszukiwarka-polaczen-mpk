@@ -5,6 +5,7 @@
 
 package Modele.Podstawowe;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -61,5 +62,20 @@ public class Droga {
      */
     public void setListaPrzyst(LinkedList<Przystanek> listaPrzyst) {
         this.listaPrzyst = listaPrzyst;
+    }
+
+    public Przystanek getPrzystanek(String przystanekString) {
+        Przystanek p = null;
+        Przystanek rob = null;
+        Iterator<Przystanek> it = listaPrzyst.iterator();
+        boolean found = false;
+        while(!found && it.hasNext()){
+            rob = it.next();
+            if(rob.getNazwa().equalsIgnoreCase(przystanekString))
+                found = true;
+        }
+
+        if(found) p = rob;
+        return p;
     }
 }
