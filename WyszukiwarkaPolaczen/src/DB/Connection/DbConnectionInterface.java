@@ -6,6 +6,9 @@
 package DB.Connection;
 
 import Modele.Podstawowe.Linia;
+import Modele.Podstawowe.Przystanek;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Vector;
 
 /**
@@ -16,4 +19,8 @@ public interface DbConnectionInterface {
     public Linia getLinia(int id);
     public Linia getLinia(String id);
     public Vector<String> getBuses();
+
+    public HashMap<String, LinkedList<String>> getStreetsAndStops();
+
+    public Przystanek getPrzystanek(String przystString);
 }

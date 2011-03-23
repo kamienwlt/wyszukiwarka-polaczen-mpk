@@ -21,7 +21,7 @@ public class RozkladPrzystanku extends RozkladAbstract{
     public String pokazRozklad() {
         String wynik = "";
         for (RozkladAbstract r : rozklady)
-            wynik += r.pokazRozklad() + "\n";
+            wynik += "Roklad linii " + r.getLinie() + "\n" + r.pokazRozklad() + "===========================\n";
         return wynik;
     }
 
@@ -41,21 +41,21 @@ public class RozkladPrzystanku extends RozkladAbstract{
     public String getLinie() {
         String linie = "";
         for (RozkladAbstract r : rozklady)
-            linie += r.getLinie();
+            linie += " " + r.getLinie();
 
         return linie;
     }
 
     @Override
-    public RozkladAbstract getRozklad(int linia){
+    public RozkladAbstract getRozklad(String linia){
         RozkladAbstract wynik = null;
         RozkladAbstract rozklad = null;
         boolean found = false;
         Iterator<RozkladAbstract> i =  rozklady.listIterator();
         while(!found && i.hasNext()){
             rozklad = i.next();
-            int nrLinii = Integer.parseInt(rozklad.getLinie());
-            if (nrLinii == linia){
+            String nrLinii = rozklad.getLinie();
+            if (nrLinii.equalsIgnoreCase(linia)){
                 found = true;
                 wynik = rozklad;
             }

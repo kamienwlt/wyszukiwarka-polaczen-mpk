@@ -11,8 +11,8 @@ import DB.Connection.DbConnectionInterface;
  *
  * @author x
  */
-public interface LiniaWidokInterface {
-    public void setLinia(int id);
-    public void setLinia(String id);
+public interface WidokInterface {
+    //public void setLinia(int id);
+    //public void setLinia(String id);
     public void setDbConnection(DbConnectionInterface dbc);
 }
