@@ -4,6 +4,7 @@
  */
 package Updater;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File;
+import java.io.FileWriter;
 
 /**
  *
@@ -92,5 +95,27 @@ public class StopsWrapper {
      */
     public void setPrzystWgUlic(HashMap<String, String> przystWgUlic) {
         this.przystWgUlic = przystWgUlic;
+    }
+
+    public void writePrzystWgUlicFile(){
+        FileWriter fw = null;
+        try {
+            File przystWgUlicFile = new File("data" + File.separator + "PrzystankiWgUlic");
+            fw = new FileWriter(przystWgUlicFile);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (String przystanek : przystWgUlic.keySet()){
+                String info = przystanek + "#" + przystWgUlic.get(przystanek);
+                bw.write(info);
+                bw.newLine();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(StopsWrapper.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(StopsWrapper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

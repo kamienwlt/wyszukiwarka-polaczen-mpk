@@ -14,7 +14,7 @@ package Modele.Rozklad;
 public abstract class RozkladAbstract {
     protected RozkladAbstract rodzic;
 
-    public abstract void pokazRozklad();
+    public abstract String pokazRozklad();
     public void addRozklad(RozkladAbstract rozklad){}
     public void removeRozklad(RozkladAbstract rozklad){}
     public RozkladAbstract getRozklad(int linia){

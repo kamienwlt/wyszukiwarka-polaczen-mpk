@@ -18,9 +18,11 @@ public class RozkladPrzystanku extends RozkladAbstract{
     private LinkedList<RozkladAbstract> rozklady = new LinkedList<RozkladAbstract>();
 
     @Override
-    public void pokazRozklad() {
+    public String pokazRozklad() {
+        String wynik = "";
         for (RozkladAbstract r : rozklady)
-            r.pokazRozklad();
+            wynik += r.pokazRozklad() + "\n";
+        return wynik;
     }
 
     @Override
