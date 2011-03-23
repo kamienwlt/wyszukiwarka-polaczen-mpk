@@ -12,17 +12,17 @@ package Modele.Rozklad;
 
 //czesc wzorca Kompozyt(Composite) - odpowiednik klasy Leaf, tzn podstawowy element struktury
 public class RozkladLinii extends RozkladAbstract{
-    private int linia;
+    private String linia;
     private String rozklad;
 
-    public RozkladLinii(int linia, String rozklad){
+    public RozkladLinii(String linia, String rozklad){
         this.rozklad = rozklad;
         this.linia = linia;
     }
 
     public RozkladLinii(){
         rozklad = "";
-        linia = -1;
+        linia = "-1";
     }
 
     @Override
@@ -38,14 +38,14 @@ public class RozkladLinii extends RozkladAbstract{
     /**
      * @return the linia
      */
-    public int getLinia() {
+    public String getLinia() {
         return linia;
     }
 
     /**
      * @param linia the linia to set
      */
-    public void setLinia(int linia) {
+    public void setLinia(String linia) {
         this.linia = linia;
     }
 

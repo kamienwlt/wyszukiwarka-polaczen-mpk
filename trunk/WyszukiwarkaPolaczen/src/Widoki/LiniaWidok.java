@@ -14,11 +14,8 @@ import Modele.Rozklad.RozkladAbstract;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -29,7 +26,7 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author x
  */
-public class LiniaWidok implements LiniaWidokInterface {
+public class LiniaWidok implements WidokInterface {
 
     //polaczenie z baza danych
     private DbConnectionInterface dbConnection;
@@ -55,6 +52,7 @@ public class LiniaWidok implements LiniaWidokInterface {
 
     private void stworzWidok() {
         frame = new JFrame();
+        frame.setTitle("Szczegóły linii");
         mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
@@ -105,6 +103,7 @@ public class LiniaWidok implements LiniaWidokInterface {
             public void actionPerformed(ActionEvent e) {
                 String liniaString = (String) linieComboBox.getSelectedItem();
                 setLinia(liniaString);
+                frame.setTitle("Szczegóły linii " + liniaString);
                 updateKierunekComboBox();
                 updatePrzystankiScrollPane();
                 updateRozkladScrollPane();

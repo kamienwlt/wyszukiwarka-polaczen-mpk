@@ -365,8 +365,8 @@ public class Updater {
                     LinkedList<String> rob = grafMapyPrzystankow.get(popPrzystanek);
                     if (!rob.contains(s)) {
                         rob.addLast(s);
-                        grafMapyPrzystankow.remove(popPrzystanek);
-                        grafMapyPrzystankow.put(popPrzystanek, rob);
+                        //grafMapyPrzystankow.remove(popPrzystanek);
+                        //grafMapyPrzystankow.put(popPrzystanek, rob);
                     }
                 } else {
                     LinkedList<String> rob = new LinkedList<String>();
@@ -401,8 +401,8 @@ public class Updater {
                         rob.addLast(w);
                     }
                 }
-                grafMapyPolaczen.remove(s);
-                grafMapyPolaczen.put(s, rob);
+                //grafMapyPolaczen.remove(s);
+                //grafMapyPolaczen.put(s, rob);
             } else {
                 grafMapyPolaczen.put(s, robList);
             }

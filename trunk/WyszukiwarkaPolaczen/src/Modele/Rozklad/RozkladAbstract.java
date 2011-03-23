@@ -17,7 +17,7 @@ public abstract class RozkladAbstract {
     public abstract String pokazRozklad();
     public void addRozklad(RozkladAbstract rozklad){}
     public void removeRozklad(RozkladAbstract rozklad){}
-    public RozkladAbstract getRozklad(int linia){
+    public RozkladAbstract getRozklad(String linia){
         return null;
     }
     public abstract String getLinie();
