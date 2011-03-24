@@ -45,39 +45,61 @@ public class MapaPolaczen extends MapaAbstract {
     }
 
     public void updateMapa(LinkedList<String> lista){
-        Stack<String> s = null;
-        File f = null;
-        FileWriter fw = null;
-        BufferedWriter bw = null;
-        int i = 1;
-        for (String przystanekPoczatkowy : lista) {
-            System.out.println("Tworze plik polaczen dla przystanku " + przystanekPoczatkowy + " [" + i + "/" + lista.size() + "]");
-            try {
-                calculateDandP(przystanekPoczatkowy);
-                boolean catalogCreated = new File("data" + File.separator + "SciezkiWzglPrzesiadek").mkdir();
-                boolean fileCreated = new File("data" + File.separator + "SciezkiWzglPrzesiadek" + File.separator + przystanekPoczatkowy).createNewFile();
-                f = new File("data" + File.separator + "SciezkiWzglPrzesiadek" + File.separator + przystanekPoczatkowy);
-                fw = new FileWriter(f);
-                bw = new BufferedWriter(fw);
-                for (String przystanekKoncowy : lista) {
-                    s = getPath(przystanekKoncowy);
-                    String path = getPath(s);
-                    if (path.startsWith(przystanekPoczatkowy)) {
-                        bw.write(przystanekKoncowy + "#" + path);
-                        bw.newLine();
-                    }
-                }
-                bw.flush();
-                bw.close();
-                fw.close();
-            } catch (IOException ex) {
-                Logger.getLogger(MapaPolaczen.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            i++;
+        int coresCount = Runtime.getRuntime().availableProcessors();
+        int size = lista.size()/coresCount;
+        for (int i = 0; i < coresCount; i++) {
+             Thread t = new Thread(new UpdateThread(lista, i*size, (i+1)*size));
+             t.start();
         }
     }
 
     public void updateMapa() {
         updateMapa(listaWierzch);
+    }
+
+    private class UpdateThread implements Runnable{
+        LinkedList<String> lista;
+        int i;
+        int i0;
+
+        public UpdateThread(LinkedList<String> lista, int i, int i0) {
+            this.lista = lista;
+            this.i = i;
+            this.i0 = i0;
+        }
+
+        public void run() {
+            Stack<String> s = null;
+            File f = null;
+            FileWriter fw = null;
+            BufferedWriter bw = null;
+            int i = 1;
+            for (int j=i; j<i0&&j<lista.size();j++) {
+                String przystanekPoczatkowy = lista.get(j);
+                System.out.println("Tworze plik polaczen dla przystanku " + przystanekPoczatkowy + " [" + i + "/" + lista.size() + "]");
+                try {
+                    calculateDandP(przystanekPoczatkowy);
+                    boolean catalogCreated = new File("data" + File.separator + "SciezkiWzglPrzesiadek").mkdir();
+                    boolean fileCreated = new File("data" + File.separator + "SciezkiWzglPrzesiadek" + File.separator + przystanekPoczatkowy).createNewFile();
+                    f = new File("data" + File.separator + "SciezkiWzglPrzesiadek" + File.separator + przystanekPoczatkowy);
+                    fw = new FileWriter(f);
+                    bw = new BufferedWriter(fw);
+                    for (String przystanekKoncowy : lista) {
+                        s = getPath(przystanekKoncowy);
+                        String path = getPath(s);
+                        if (path.startsWith(przystanekPoczatkowy)) {
+                            bw.write(przystanekKoncowy + "#" + path);
+                            bw.newLine();
+                        }
+                    }
+                    bw.flush();
+                    bw.close();
+                    fw.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(MapaPolaczen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i++;
+            }
+        }
     }
 }
