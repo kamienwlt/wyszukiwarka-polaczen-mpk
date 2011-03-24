@@ -59,6 +59,8 @@ public class CreateDB {
                 stmt.execute("CREATE TABLE godzinyNiedziela (id_przystanku Integer NOT NULL,  id_linii Integer NOT NULL, godziny blob);");
                 stmt.execute("CREATE TABLE godzinyWigilia (id_przystanku Integer NOT NULL,  id_linii Integer NOT NULL, godziny blob);");
                 stmt.execute("CREATE TABLE godzinyWielkanoc (id_przystanku Integer NOT NULL,  id_linii Integer NOT NULL, godziny blob);");
+                stmt.execute("CREATE TABLE polaczenia (id_przystanku Integer NOT NULL,  id_przystanku2 Integer NOT NULL);");
+                stmt.execute("CREATE TABLE polaczenia2 (id_przystanku Integer NOT NULL,  id_przystanku2 Integer NOT NULL, poloczenia BLOB);");
             } catch (MySQLSyntaxErrorException e) {
                 Logger.getLogger(CreateDB.class.getName()).log(Level.SEVERE, null, e);
                 System.exit(0);
