@@ -10,6 +10,7 @@ import Modele.Podstawowe.Linia;
 import Modele.Podstawowe.Przystanek;
 import Modele.Podstawowe.Trasa;
 import Modele.Rozklad.RozkladAbstract;
+import Modele.Rozklad.RozkladPrzystanku;
 import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import java.sql.Array;
 import java.sql.Blob;
@@ -19,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -147,8 +149,18 @@ public class NotFakeDBConnection implements DbConnectionInterface{
     }
 
     public Przystanek getPrzystanek(String przystString) {
-        Przystanek wynik = null;
-        
+        String s = przystString.replaceFirst(" - ", "#");
+        String[] tab = s.split("#");
+        Przystanek wynik = new Przystanek(Integer.parseInt(tab[0]), tab[1], ulicaWzglPrzyst.get(przystString));
+        if (stopsBuses == null) {
+            createStopsBuses();
+        }
+        LinkedList<String> busList = stopsBuses.get("" + wynik.getId());
+        RozkladAbstract rozkladPrzystanku = new RozkladPrzystanku();
+        for(String bus : busList){
+            RozkladAbstract rozkladLinii = getRozklad(bus, wynik.getNazwa());
+            rozkladPrzystanku.addRozklad(rozkladLinii);
+        }
         return wynik;
     }
 
@@ -182,5 +194,52 @@ public class NotFakeDBConnection implements DbConnectionInterface{
             Logger.getLogger(NotFakeDBConnection.class.getName()).log(Level.SEVERE, null, e);
             System.exit(0);
         }
+    }
+
+    private void createStopsBuses() {
+        stopsBuses = new HashMap<String, LinkedList<String>>();
+        try {
+            ResultSet rs = executeQuery("SELECT id_linii, lista_id_przystankow FROM trasa;");
+            while(rs.next()){
+                ResultSet rs2 = executeQuery("SELECT nazwa FROM linia WHERE id_linii="+rs.getInt(1)+";");
+                rs2.next();
+                String linia = rs2.getString(1);
+                String[] listaPrzyst = rs.getString(2).split(" ");
+                for (int i = 0; i < listaPrzyst.length; i++) {
+                    if (stopsBuses.containsKey(listaPrzyst[i])) {
+                        LinkedList<String> rob = stopsBuses.get(listaPrzyst[i]);
+                        rob.addLast(linia);
+                        //wynik.remove(ulica);
+                    } else {
+                        LinkedList<String> rob = new LinkedList<String>();
+                        rob.addLast(linia);
+                        stopsBuses.put(listaPrzyst[i], rob);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(NotFakeDBConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private RozkladAbstract getRozklad(String bus, String nazwa) {
+        RozkladAbstract wynik = null;
+        RozkladAbstract rob = null;
+        Linia l = this.getLinia(bus);
+        LinkedList<Trasa> trasy = l.getTrasy();
+        Iterator<Trasa> it = trasy.iterator();
+        boolean found = false;
+        while (!found && it.hasNext()){
+            Trasa t = it.next();
+            Droga d = t.getDroga();
+            Przystanek p = d.getPrzystanek(nazwa);
+            if (p != null){
+                found = true;
+                rob = p.getRozklad();
+            }
+        }
+        if (found) wynik = rob;
+        return wynik;
     }
 }

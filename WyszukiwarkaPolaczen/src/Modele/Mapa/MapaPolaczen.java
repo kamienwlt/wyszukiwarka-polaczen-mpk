@@ -73,7 +73,6 @@ public class MapaPolaczen extends MapaAbstract {
             File f = null;
             FileWriter fw = null;
             BufferedWriter bw = null;
-            int i = 1;
             for (int j=i; j<i0&&j<lista.size();j++) {
                 String przystanekPoczatkowy = lista.get(j);
                 System.out.println("Tworze plik polaczen dla przystanku " + przystanekPoczatkowy + " [" + i + "/" + lista.size() + "]");
