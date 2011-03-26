@@ -93,7 +93,7 @@ public class FakeDbConnection implements DbConnectionInterface {
                 System.out.println(ulica + " " + przystanek);
             }
         }
-//        Linia l = new FakeDbConnection().getLinia("001");
+//        Linia l = new FakeDbConnection().getLinia("008");
 //        for(Trasa t : l.getTrasy()){
 //            System.out.println("Trasa w kierunku " + t.getKierunek());
 //            Droga d = t.getDroga();
