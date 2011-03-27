@@ -5,15 +5,13 @@
 
 package Modele.WyszukiwarkaTrasy;
 
-import Modele.Mapa.MapaInterface;
-
 /**
  *
  * @author x
  */
 public interface WyszukiwarkaTrasyInterface {
-    public void setMapa(MapaInterface mapa);
-    public void setPoczatek(String poczatek);
-    public void setKoniec(String koniec);
-    public void showPath();
+    public static final String LICZBA_PRZESIADEK = "LICZBA_PRZESIADEK";
+    public static final String LICZBA_PRZYSTANKOW = "LICZBA_PRZYSTANKOW";
+    public void setKryterium(String kryterium);
+    public String getPath(String poczatek, String koniec);
 }

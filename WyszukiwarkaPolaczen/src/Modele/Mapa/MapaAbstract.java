@@ -66,7 +66,7 @@ public abstract class MapaAbstract implements MapaInterface {
     }
 
     protected void showKrawedzie() {
-        for (KrawedzPrzystankow k : listaKrawedzi) {
+        for (KrawedzPrzystankow k : getListaKrawedzi()) {
             k.showKrawedz();
         }
     }
@@ -78,7 +78,7 @@ public abstract class MapaAbstract implements MapaInterface {
         p = new HashMap<String, String>();
         d = new HashMap<String, Integer>();
 
-        for (String v : listaWierzch) {
+        for (String v : getListaWierzch()) {
             Q.add(v);
             p.put(v, null);
             d.put(v, 9999999);
@@ -86,7 +86,7 @@ public abstract class MapaAbstract implements MapaInterface {
         d.remove(v0);
         d.put(v0, 0);
         while (!Q.isEmpty()) {
-            System.out.println(Q.size());
+            //System.out.println(Q.size());
             String u = min(Q, d);
             Q.remove(u);
             S.add(u);
@@ -105,18 +105,18 @@ public abstract class MapaAbstract implements MapaInterface {
                 }
             }
         }
-        System.out.println("Zakonczono glowne obliczenia dla przystanku nr " + v0);
+        //System.out.println("Zakonczono glowne obliczenia dla przystanku nr " + v0);
     }
 
     protected Stack<String> getPath(String i){
         String rob = i;
-        System.out.println("Rozpoczeto budowanie sciezki do przystanku nr " + rob);
+        //System.out.println("Rozpoczeto budowanie sciezki do przystanku nr " + rob);
         Stack<String> wynik = new Stack<String>();
         while (i != null){
             wynik.add(i);
             i = p.get(i);
         }
-        System.out.println("Zakonczono budowanie sciezki do przystanku nr " + rob);
+        //System.out.println("Zakonczono budowanie sciezki do przystanku nr " + rob);
         return wynik;
     }
 
@@ -167,7 +167,7 @@ public abstract class MapaAbstract implements MapaInterface {
 
     protected boolean krawedzExists(String u, String v) {
         boolean found = false;
-        Iterator it = listaKrawedzi.iterator();
+        Iterator it = getListaKrawedzi().iterator();
         while (!found && it.hasNext()) {
             KrawedzPrzystankow k = (KrawedzPrzystankow) it.next();
             if (k.getPoczatek().equals(u) && k.getKoniec().equals(v)) {
@@ -236,5 +236,26 @@ public abstract class MapaAbstract implements MapaInterface {
                 Logger.getLogger(MapaPrzystankow.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    /**
+     * @return the listaKrawedzi
+     */
+    public LinkedList<KrawedzPrzystankow> getListaKrawedzi() {
+        return listaKrawedzi;
+    }
+
+    /**
+     * @param listaKrawedzi the listaKrawedzi to set
+     */
+    public void setListaKrawedzi(LinkedList<KrawedzPrzystankow> listaKrawedzi) {
+        this.listaKrawedzi = listaKrawedzi;
+    }
+
+    /**
+     * @param listaWierzch the listaWierzch to set
+     */
+    public void setListaWierzch(LinkedList<String> listaWierzch) {
+        this.listaWierzch = listaWierzch;
     }
 }

@@ -7,6 +7,7 @@ package DB.Connection;
 
 import Modele.Podstawowe.Linia;
 import Modele.Podstawowe.Przystanek;
+import Modele.WyszukiwarkaTrasy.WyszukiwarkaTrasyInterface;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -19,8 +20,10 @@ public interface DbConnectionInterface {
     public Linia getLinia(int id);
     public Linia getLinia(String id);
     public Vector<String> getBuses();
-
     public HashMap<String, LinkedList<String>> getStreetsAndStops();
+    public Przystanek getPrzystanekByWholeName(String przystString);
+    public Przystanek getPrzystanekById(String przystId);
+    public void setWyszukiwarkaTrasy(WyszukiwarkaTrasyInterface wyszukiwarka);
 
-    public Przystanek getPrzystanek(String przystString);
+    public String getTrasa(String string, String string0);
 }
