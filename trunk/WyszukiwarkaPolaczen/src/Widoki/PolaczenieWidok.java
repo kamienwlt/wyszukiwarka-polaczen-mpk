@@ -217,9 +217,9 @@ public class PolaczenieWidok implements WidokInterface {
         c.gridy = 1;
         poczatekTrasyPanel.add(poczatekTrasyPrzystanekComboBox, c);
         poczatekTrasyPanel.validate();
-        if (poczatekPrzystanek != null) {
-            poczatekPrzystanek = null;
-        }
+//        if (poczatekPrzystanek != null) {
+//            poczatekPrzystanek = null;
+//        }
         poczatekUlica = PrzystanekWidok.ULICA_DOWOLNA;
     }
 
@@ -307,9 +307,9 @@ public class PolaczenieWidok implements WidokInterface {
         c.gridy = 1;
         koniecTrasyPanel.add(koniecTrasyPrzystanekComboBox, c);
         koniecTrasyPanel.validate();
-        if (koniecPrzystanek != null) {
-            koniecPrzystanek = null;
-        }
+//        if (koniecPrzystanek != null) {
+//            koniecPrzystanek = null;
+//        }
         koniecUlica = PrzystanekWidok.ULICA_DOWOLNA;
     }
 
