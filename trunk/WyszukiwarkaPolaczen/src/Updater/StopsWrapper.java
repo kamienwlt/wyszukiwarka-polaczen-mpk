@@ -107,6 +107,7 @@ public class StopsWrapper {
                 String info = przystanek + "#" + przystWgUlic.get(przystanek);
                 bw.write(info);
                 bw.newLine();
+                bw.flush();
             }
         } catch (IOException ex) {
             Logger.getLogger(StopsWrapper.class.getName()).log(Level.SEVERE, null, ex);

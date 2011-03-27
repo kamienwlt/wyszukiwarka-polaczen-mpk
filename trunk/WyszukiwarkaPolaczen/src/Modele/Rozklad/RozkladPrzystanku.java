@@ -28,7 +28,7 @@ public class RozkladPrzystanku extends RozkladAbstract{
     @Override
     public void addRozklad(RozkladAbstract rozklad){
         rozklady.add(rozklad);
-        rozklad.setRodzic(this);
+        //rozklad.setRodzic(this);
     }
 
     @Override

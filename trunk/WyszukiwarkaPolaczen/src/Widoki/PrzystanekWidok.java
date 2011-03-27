@@ -26,6 +26,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,7 +40,7 @@ public class PrzystanekWidok implements WidokInterface {
 
     public static final String ULICA_DOWOLNA = "Dowolna";
     public static final String LINIA_DOWOLNA = "Dowolna";
-    private DbConnectionInterface dbConnnection;
+    private DbConnectionInterface dbConnection;
     private HashMap<String, LinkedList<String>> mapaUlic;
     private String ulica;
     private String linia;
@@ -54,11 +56,24 @@ public class PrzystanekWidok implements WidokInterface {
     private JComboBox linieComboBox;
 
     public static void main(String[] args) {
+        try {
+            // Set System L&F
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+        } catch (ClassNotFoundException e) {
+            // handle exception
+        } catch (InstantiationException e) {
+            // handle exception
+        } catch (IllegalAccessException e) {
+            // handle exception
+        }
         PrzystanekWidok pw = new PrzystanekWidok();
     }
 
     public PrzystanekWidok() {
-        this.dbConnnection = new FakeDbConnection();
+        this.dbConnection = new FakeDbConnection();
         przystanek = null;
         mapaUlic = null;
         ulica = PrzystanekWidok.ULICA_DOWOLNA;
@@ -67,13 +82,13 @@ public class PrzystanekWidok implements WidokInterface {
     }
 
     public void setDbConnection(DbConnectionInterface dbc) {
-        this.dbConnnection = dbc;
+        this.dbConnection = dbc;
     }
 
     private void stworzWidok() {
-        mapaUlic = dbConnnection.getStreetsAndStops();
+        mapaUlic = dbConnection.getStreetsAndStops();
         frame = new JFrame();
-        frame.setTitle("Szczegóły linii");
+        frame.setTitle("Szczegóły Przystanku");
         mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
@@ -162,7 +177,8 @@ public class PrzystanekWidok implements WidokInterface {
 
             public void actionPerformed(ActionEvent e) {
                 String przystString = (String) przystanekComboBox.getSelectedItem();
-                przystanek = dbConnnection.getPrzystanek(przystString);
+                przystanek = dbConnection.getPrzystanekByWholeName(przystString);
+                frame.setTitle("Szczegoly Przystanku " + przystanek.getId() + " " + przystanek.getNazwa());
                 //System.out.println(przystanek.getRozklad().pokazRozklad());
                 updateRozkladScrollPane();
                 updateLinieComboBox();

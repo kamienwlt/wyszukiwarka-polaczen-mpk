@@ -11,6 +11,7 @@ import Modele.Podstawowe.Przystanek;
 import Modele.Podstawowe.Trasa;
 import Modele.Rozklad.RozkladAbstract;
 import Modele.Rozklad.RozkladPrzystanku;
+import Modele.WyszukiwarkaTrasy.WyszukiwarkaTrasyInterface;
 import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import java.sql.Array;
 import java.sql.Blob;
@@ -148,7 +149,7 @@ public class NotFakeDBConnection implements DbConnectionInterface{
         return wynik;
     }
 
-    public Przystanek getPrzystanek(String przystString) {
+    public Przystanek getPrzystanekByWholeName(String przystString) {
         String s = przystString.replaceFirst(" - ", "#");
         String[] tab = s.split("#");
         Przystanek wynik = new Przystanek(Integer.parseInt(tab[0]), tab[1], ulicaWzglPrzyst.get(przystString));
@@ -241,5 +242,17 @@ public class NotFakeDBConnection implements DbConnectionInterface{
         }
         if (found) wynik = rob;
         return wynik;
+    }
+
+    public void setWyszukiwarkaTrasy(WyszukiwarkaTrasyInterface wyszukiwarka) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getTrasa(String string, String string0) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Przystanek getPrzystanekById(String przystId) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -11,6 +11,8 @@ import Modele.Podstawowe.Trasa;
 import Modele.Rozklad.RozkladAbstract;
 import Modele.Rozklad.RozkladLinii;
 import Modele.Rozklad.RozkladPrzystanku;
+import Modele.WyszukiwarkaTrasy.FakeDbWyszukiwarkaTrasy;
+import Modele.WyszukiwarkaTrasy.WyszukiwarkaTrasyInterface;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
@@ -31,6 +33,12 @@ public class FakeDbConnection implements DbConnectionInterface {
     private String sciezka = "data" + File.separator;
     private HashMap<String, String> ulicaWzglPrzyst = new HashMap<String, String>();
     private HashMap<String, LinkedList<String>> stopsBuses = null;
+    private WyszukiwarkaTrasyInterface wyszukiwarkaTrasy = new FakeDbWyszukiwarkaTrasy();
+
+    public FakeDbConnection(){
+        getStreetsAndStops();
+        createStopsBuses();
+    }
 
     public Linia getLinia(String id) {
         Linia wynik = null;
@@ -87,22 +95,8 @@ public class FakeDbConnection implements DbConnectionInterface {
     }
 
     public static void main(String[] args) {
-        HashMap<String, LinkedList<String>> m = new FakeDbConnection().getStreetsAndStops();
-        for (String ulica : m.keySet()) {
-            for (String przystanek : m.get(ulica)) {
-                System.out.println(ulica + " " + przystanek);
-            }
-        }
-//        Linia l = new FakeDbConnection().getLinia("008");
-//        for(Trasa t : l.getTrasy()){
-//            System.out.println("Trasa w kierunku " + t.getKierunek());
-//            Droga d = t.getDroga();
-//            for(Przystanek p : d.getListaPrzyst()){
-//                System.out.println("Rozklad przystanku " + p.getNazwa() + " na ulicy " + p.getUlica());
-//                RozkladAbstract r = p.getRozklad();
-//                r.pokazRozklad();
-//            }
-//        }
+        FakeDbConnection db = new FakeDbConnection();
+        System.out.println(db.getNazwa("5832"));
     }
 
     public Linia getLinia(int id) {
@@ -163,7 +157,7 @@ public class FakeDbConnection implements DbConnectionInterface {
         return wynik;
     }
 
-    public Przystanek getPrzystanek(String przystString) {
+    public Przystanek getPrzystanekByWholeName(String przystString) {
         String s = przystString.replaceFirst(" - ", "#");
         String[] tab = s.split("#");
         Przystanek wynik = new Przystanek(Integer.parseInt(tab[0]), tab[1], ulicaWzglPrzyst.get(przystString));
@@ -172,7 +166,7 @@ public class FakeDbConnection implements DbConnectionInterface {
         }
         LinkedList<String> busList = stopsBuses.get("" + wynik.getId());
         RozkladAbstract rozkladPrzystanku = new RozkladPrzystanku();
-        for(String bus : busList){
+        for (String bus : busList) {
             RozkladAbstract rozkladLinii = getRozklad(bus, wynik.getNazwa());
             rozkladPrzystanku.addRozklad(rozkladLinii);
         }
@@ -207,16 +201,52 @@ public class FakeDbConnection implements DbConnectionInterface {
         LinkedList<Trasa> trasy = l.getTrasy();
         Iterator<Trasa> it = trasy.iterator();
         boolean found = false;
-        while (!found && it.hasNext()){
+        while (!found && it.hasNext()) {
             Trasa t = it.next();
             Droga d = t.getDroga();
             Przystanek p = d.getPrzystanek(nazwa);
-            if (p != null){
+            if (p != null) {
                 found = true;
                 rob = p.getRozklad();
             }
         }
-        if (found) wynik = rob;
+        if (found) {
+            wynik = rob;
+        }
         return wynik;
+    }
+
+    public void setWyszukiwarkaTrasy(WyszukiwarkaTrasyInterface wyszukiwarka) {
+        this.wyszukiwarkaTrasy = wyszukiwarka;
+    }
+
+    public String getTrasa(String string, String string0) {
+        return wyszukiwarkaTrasy.getPath(string, string0);
+    }
+
+    public Przystanek getPrzystanekById(String przystId) {
+        String nazwa = getNazwa(przystId);
+        Przystanek wynik = getPrzystanekByWholeName(przystId + " - " + nazwa);
+        return wynik;
+    }
+
+    private String getNazwa(String przystId) {
+        String nazwa = null;
+        Iterator<String> it = ulicaWzglPrzyst.keySet().iterator();
+        boolean found = false;
+        String rob = "";
+        while (!found && it.hasNext()) {
+            rob = it.next();
+            if (rob.startsWith(przystId)) {
+                found = true;
+            }
+        }
+        if (found) {
+            rob = rob.replaceFirst(" - ", "#");
+            String[] tab = rob.split("#");
+            nazwa = tab[1];
+        }
+
+        return nazwa;
     }
 }
